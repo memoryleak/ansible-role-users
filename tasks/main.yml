@@ -1,0 +1,53 @@
+---
+- name: Create groups.
+  group:
+    name: "{{item.name}}"
+    state: "{{item.state}}"
+  become: true
+  with_items: "{{ users_groups }}"
+  tags: ['group']
+
+- name: Create users.
+  user:
+    group: "{{ item.group | default(users_default_group) }}"
+    groups: "{{ item.groups | default([]) }}"
+    home: "{{ item.home | default('/home/' + item.name) }}"
+    name: "{{ item.name }}"
+    password: "{{ item.password }}"
+    state: "{{ item.state | default('present') }}"
+    update_password: always
+  become: true
+  with_items: "{{ users_users }}"
+  tags: ['user']
+
+- name: "Create sudoers.d fragments for users"
+  template:
+    src: sudoers.j2
+    dest: "/etc/sudoers.d/users"
+    owner: root
+    group: root
+    mode: 0640
+  become: true
+  tags: ['template', 'user', 'sudoers']
+
+- name: "Create sudoers.d fragments for groups"
+  template:
+    src: sudoers-groups.j2
+    dest: "/etc/sudoers.d/groups"
+    owner: root
+    group: root
+    mode: 0640
+  become: true
+  tags: ['template', 'user', 'sudoers']
+
+- name: Create authorized_key entries.
+  authorized_key:
+    comment: "{{ item.public_key_comment  | default('') }}"
+    exclusive: false
+    key: "{{ item.public_key }}"
+    manage_dir: true
+    user: "{{ item.name }}"
+  become: true
+  when: item.state == 'present'
+  with_items: "{{ users_users }}"
+  tags: ['authorized_key', 'user']

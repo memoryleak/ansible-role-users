@@ -1,0 +1,12 @@
+# {{ ansible_managed }}
+{% for item in users_users %}
+{% if item.state == 'present' and item.sudo is defined %}
+{% if item.sudo == true %}
+{{ item.name }} ALL=(ALL) ALL
+{% elif item.sudo == 'nopasswd' %}
+{{ item.name }} ALL=(ALL) NOPASSWD:ALL
+{% else %}
+# Access via sudo not permitted for {{ item.name }}
+{% endif %}
+{% endif %}
+{% endfor %}
