@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.org/memoryleak/ansible-role-users.svg?branch=master)](https://travis-ci.org/memoryleak/ansible-role-users)
+
+[![Galaxy](https://img.shields.io/badge/galaxy-memoryleak.users-blue.svg)](https://galaxy.ansible.com/memoryleak/users) [![Build Status](https://travis-ci.org/memoryleak/ansible-role-users.svg?branch=master)](https://travis-ci.org/memoryleak/ansible-role-users)
 
 memoryleak.users
 ================
