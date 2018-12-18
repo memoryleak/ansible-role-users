@@ -1,5 +1,4 @@
 # {{ ansible_managed }}
-{% for item in users_groups %}
 {% if item.state == 'present' %}
 {% if item.sudo == true %}
 %{{ item.name }} ALL=(ALL) ALL
@@ -9,4 +8,3 @@
 # Access via sudo not permitted for {{ item.name }}
 {% endif %}
 {% endif%}    
-{% endfor %}

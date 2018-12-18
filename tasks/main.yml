@@ -5,6 +5,9 @@
     state: "{{item.state}}"
   become: true
   with_items: "{{ users_groups }}"
+  when:
+    ((users_filter_groups is defined and item.name in users_filter_groups) or (users_filter_groups is not defined)) and
+    (item.state is not defined or item.state != "absent")
   tags: ['group']
 
 - name: Create users.
@@ -18,26 +21,33 @@
     update_password: always
   become: true
   with_items: "{{ users_users }}"
+  when: ((users_filter_users is defined and item.name in users_filter_users) or (users_filter_users is not defined))
   tags: ['user']
 
 - name: "Create sudoers.d fragments for users"
   template:
     src: sudoers.j2
-    dest: "/etc/sudoers.d/users"
+    dest: "/etc/sudoers.d/{{ item.name | replace('.', '_')}}"
     owner: root
     group: root
     mode: 0640
   become: true
+  with_items: "{{ users_users }}"
+  when: ((users_filter_users is defined and item.name in users_filter_users) or (users_filter_users is not defined))
   tags: ['template', 'user', 'sudoers']
 
 - name: "Create sudoers.d fragments for groups"
   template:
     src: sudoers-groups.j2
-    dest: "/etc/sudoers.d/groups"
+    dest: "/etc/sudoers.d/group-{{ item.name | replace('.', '_')}}"
     owner: root
     group: root
     mode: 0640
   become: true
+  with_items: "{{ users_groups }}"
+  when:
+    ((users_filter_groups is defined and item.name in users_filter_groups) or (users_filter_groups is not defined)) and
+    (item.state is not defined or item.state != "absent")
   tags: ['template', 'user', 'sudoers']
 
 - name: Create authorized_key entries.
@@ -48,6 +58,8 @@
     manage_dir: true
     user: "{{ item.name }}"
   become: true
-  when: item.state == 'present'
+  when:
+    - item.state == 'present'
+    - ((users_filter_users is defined and item.name in users_filter_users) or (users_filter_users is not defined))
   with_items: "{{ users_users }}"
   tags: ['authorized_key', 'user']

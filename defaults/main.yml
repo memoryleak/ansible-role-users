@@ -2,6 +2,6 @@
 # defaults file for memoryleak.users
 users_groups: []
 users_users: []
-users_filter_groups: []
-users_filter_users: []
+# users_filter_groups: []
+# users_filter_users: []
 users_default_group: users
