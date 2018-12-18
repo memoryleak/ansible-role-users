@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/memoryleak/ansible-role-users.svg?branch=master)](https://travis-ci.org/memoryleak/ansible-role-users)
+
 memoryleak.users
 ================
 
